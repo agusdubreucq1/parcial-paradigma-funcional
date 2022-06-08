@@ -40,12 +40,12 @@ data Participante = UnParticipante {
   inteligencia :: Int,
   destreza :: Int,
   rol :: Rol
-}
+} deriving Show
 
 data Arma = UnArma {
   valorCombate :: Int,
   experienciaMinima :: Int
-}
+} deriving Show
 
 type Rol = Participante -> Int
 
@@ -56,11 +56,11 @@ soporte :: Participante -> Int
 soporte participante = experiencia participante + inteligencia participante*7
 
 primeraLinea :: Arma -> Participante -> Int
-primeraLinea arma participante = (destreza participante + potenciaArma arma participante) * div (experiencia participante) 100
+primeraLinea arma participante = (destreza participante + potenciaArma participante arma) * div (experiencia participante) 100
 
 
-potenciaArma :: Arma -> Participante -> Int
-potenciaArma arma participante 
+potenciaArma :: Participante -> Arma -> Int
+potenciaArma participante arma
   |experienciaMinima arma <= experiencia participante = valorCombate arma
   | otherwise = div (valorCombate arma) 2
 
@@ -70,8 +70,40 @@ poder :: Participante -> Int
 poder participante = experiencia participante * rol participante participante
 
 {-------------------------------punto 2--------------------------------------}
---elegirNuevoRol :: Participante -> [Rol] -> Participante
---elegirNuevoRol participante roles = 
+elegirNuevoRol :: Participante -> [Rol] -> Participante
+elegirNuevoRol participante roles = cambiarRol participante (maximoSegun ($participante) roles)
+
+cambiarRol :: Participante -> Rol -> Participante
+cambiarRol participante rol = participante{rol = rol}
+
+rolesEjemplo = [indeterminado, soporte, primeraLinea arma]
+arma = UnArma 20 750
+
+maestroDeArmas :: [Arma] -> Rol 
+maestroDeArmas armas participante = sum . map (potenciaArma participante) . take 3 . filter (puedeUsarArma participante) $ armas
+
+puedeUsarArma :: Participante -> Arma -> Bool
+puedeUsarArma participante arma = experienciaMinima arma <= experiencia participante
+
+{-3 d) es posible gracias a que solo tomamos los 3 primeros(que cumplan la condicion) por lo que gracias a la evalucacion perezosa
+va a ser posible dar un resultado-} 
+
+{-------------------------------punto 3--------------------------------------}
+participanteSeEncuentra :: Participante -> [Participante] -> Bool
+participanteSeEncuentra participante = elem (nombre participante) . map nombre
+
+recompensa :: [Participante] -> [Participante] -> Int
+recompensa todos ganadores = experiencia . inteligenciaYDestrezaMasAltos . filter (`participanteSeEncuentra` ganadores) $ todos
+
+inteligenciaYDestrezaMasAltos :: [Participante] -> Participante
+inteligenciaYDestrezaMasAltos = maximoSegun valorMasAltoEntreInteligenciaYDestreza 
+
+valorMasAltoEntreInteligenciaYDestreza :: Participante -> Int
+valorMasAltoEntreInteligenciaYDestreza participante = max (destreza participante) (inteligencia participante)
+{-------------------------------punto 4--------------------------------------}
+
+
+
 
 
 
