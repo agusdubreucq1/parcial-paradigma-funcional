@@ -22,12 +22,12 @@ mayorSegun f a b
 -- Descomentar luego de definir los tipos Rol y Participante
 -- de acuerdo al modelo elegido en el punto 1:
 
-{-
+
 data Desafio = Desafio {
     rolesDisponibles :: [Rol],
     pruebaASuperar :: Participante -> Bool
   }
--}
+
 
 ----------------------------------------------
 -- Definí tus tipos de datos y funciones aquí
@@ -85,7 +85,7 @@ maestroDeArmas armas participante = sum . map (potenciaArma participante) . take
 puedeUsarArma :: Participante -> Arma -> Bool
 puedeUsarArma participante arma = experienciaMinima arma <= experiencia participante
 
-{-3 d) es posible gracias a que solo tomamos los 3 primeros(que cumplan la condicion) por lo que gracias a la evalucacion perezosa
+{-2 d) es posible gracias a que solo tomamos los 3 primeros(que cumplan la condicion) por lo que gracias a la evalucacion perezosa
 va a ser posible dar un resultado-} 
 
 {-------------------------------punto 3--------------------------------------}
@@ -101,6 +101,27 @@ inteligenciaYDestrezaMasAltos = maximoSegun valorMasAltoEntreInteligenciaYDestre
 valorMasAltoEntreInteligenciaYDestreza :: Participante -> Int
 valorMasAltoEntreInteligenciaYDestreza participante = max (destreza participante) (inteligencia participante)
 {-------------------------------punto 4--------------------------------------}
+--encararDesafio :: [Participante] -> Desafio -> [Participante]
+--encararDesafio participantes desafio = map (incrementarExperiencia (recompensa participantes (ganadores participantes desafio))) (ganadores participantes desafio)
+
+encararDesafio :: [Participante] -> Desafio -> [Participante]
+encararDesafio participantes desafio = incrementarExperienciaATodos (ganadores participantes desafio) (recompensa participantes (ganadores participantes desafio))
+
+incrementarExperienciaATodos:: [Participante] -> Int -> [Participante]
+incrementarExperienciaATodos participantes valor = map (incrementarExperiencia valor) participantes
+
+ganadores :: [Participante] -> Desafio -> [Participante]
+ganadores participantes desafio = filter (pruebaASuperar desafio) . map (`elegirNuevoRol` rolesDisponibles desafio) $ participantes
+
+incrementarExperiencia :: Int -> Participante -> Participante
+incrementarExperiencia valor participante = participante {experiencia = experiencia participante + valor}
+
+{-------------------------------punto 5--------------------------------------}
+jugarTorneo :: [Participante] -> [Desafio] -> [Participante]
+--jugarTorneo participantes [] = participantes
+--jugarTorneo participantes (d1:ds) = jugarTorneo (encararDesafio participantes d1) ds
+
+jugarTorneo = foldl encararDesafio 
 
 
 
