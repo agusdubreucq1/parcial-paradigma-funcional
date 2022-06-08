@@ -34,6 +34,8 @@ data Desafio = Desafio {
 -- abajo, indicando a qué punto pertenecen
 ----------------------------------------------
 
+
+{---------------------------------------------punto 1-------------------------------------------------}
 data Participante = UnParticipante {
   nombre :: String,
   experiencia :: Int,
@@ -67,17 +69,17 @@ potenciaArma participante arma
 participante = UnParticipante "participante" 1000 20 12 indeterminado
 
 poder :: Participante -> Int
-poder participante = experiencia participante * rol participante participante
+poder participante = experiencia participante * aptitudParaSuRol participante
 
-{-------------------------------punto 2--------------------------------------}
+aptitudParaSuRol :: Participante -> Int
+aptitudParaSuRol = rol participante
+
+{---------------------------------------------punto 2-------------------------------------------------}
 elegirNuevoRol :: Participante -> [Rol] -> Participante
 elegirNuevoRol participante roles = cambiarRol participante (maximoSegun ($participante) roles)
 
 cambiarRol :: Participante -> Rol -> Participante
 cambiarRol participante rol = participante{rol = rol}
-
---rolesEjemplo = [indeterminado, soporte, primeraLinea arma]
---arma = UnArma 20 750
 
 maestroDeArmas :: [Arma] -> Rol 
 maestroDeArmas armas participante = sum . map (potenciaArma participante) . take 3 . filter (puedeUsarArma participante) $ armas
@@ -85,24 +87,25 @@ maestroDeArmas armas participante = sum . map (potenciaArma participante) . take
 puedeUsarArma :: Participante -> Arma -> Bool
 puedeUsarArma participante arma = experienciaMinima arma <= experiencia participante
 
-{-2 b) >poder (elegirNuevoRol participante [indeterminado, soporte, primeraLinea (UnArma 20 750)])-}
+{-2 b) poder (elegirNuevoRol participante [indeterminado, soporte, primeraLinea (UnArma 20 750)])-}
 
 {-2 d) es posible gracias a que solo tomamos los 3 primeros(que cumplan la condicion) por lo que gracias a la evalucacion perezosa
 va a ser posible dar un resultado-} 
 
-{-------------------------------punto 3--------------------------------------}
+{---------------------------------------------punto 3-------------------------------------------------}
 participanteSeEncuentra :: Participante -> [Participante] -> Bool
 participanteSeEncuentra participante = elem (nombre participante) . map nombre
 
 recompensa :: [Participante] -> [Participante] -> Int
-recompensa todos ganadores = experiencia . inteligenciaYDestrezaMasAltos . filter (`participanteSeEncuentra` ganadores) $ todos
+recompensa todos ganadores = experiencia . inteligenciaYDestrezaMasAltos . filter (not . (`participanteSeEncuentra` ganadores)) $ todos
 
 inteligenciaYDestrezaMasAltos :: [Participante] -> Participante
 inteligenciaYDestrezaMasAltos = maximoSegun valorMasAltoEntreInteligenciaYDestreza 
 
 valorMasAltoEntreInteligenciaYDestreza :: Participante -> Int
 valorMasAltoEntreInteligenciaYDestreza participante = max (destreza participante) (inteligencia participante)
-{-------------------------------punto 4--------------------------------------}
+
+{---------------------------------------------punto 4-------------------------------------------------}
 --encararDesafio :: [Participante] -> Desafio -> [Participante]
 --encararDesafio participantes desafio = map (incrementarExperiencia (recompensa participantes (ganadores participantes desafio))) (ganadores participantes desafio)
 
@@ -118,12 +121,27 @@ ganadores participantes desafio = filter (pruebaASuperar desafio) . map (`elegir
 incrementarExperiencia :: Int -> Participante -> Participante
 incrementarExperiencia valor participante = participante {experiencia = experiencia participante + valor}
 
-{-------------------------------punto 5--------------------------------------}
-jugarTorneo :: [Participante] -> [Desafio] -> [Participante]
+{---------------------------------------------punto 5-------------------------------------------------}
+type Torneo = [Desafio]
+jugarTorneo :: [Participante] -> Torneo -> [Participante]
 --jugarTorneo participantes [] = participantes
 --jugarTorneo participantes (d1:ds) = jugarTorneo (encararDesafio participantes d1) ds
 
 jugarTorneo = foldl encararDesafio 
+
+{--------------------------------------------------Ejemplos para Pruebas------------------------------------------}
+
+
+part1 = UnParticipante "agus" 750 20 12 indeterminado 
+part2 = UnParticipante "lucas" 850 30 12 indeterminado 
+part3 = UnParticipante "maxi" 500 15 12 indeterminado 
+part4 = UnParticipante "colo" 1000 20 23 (primeraLinea arma3) 
+
+rolesEjemplo = [indeterminado, soporte, primeraLinea arma1]
+arma1 = UnArma 20 750
+arma2 = UnArma 30 800
+arma3 = UnArma 25 900
+arma4 = UnArma 30 1000
 
 
 
