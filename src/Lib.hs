@@ -110,13 +110,13 @@ valorMasAltoEntreInteligenciaYDestreza participante = max (destreza participante
 --encararDesafio participantes desafio = map (incrementarExperiencia (recompensa participantes (ganadores participantes desafio))) (ganadores participantes desafio)
 
 encararDesafio :: [Participante] -> Desafio -> [Participante]
-encararDesafio participantes desafio = incrementarExperienciaATodos (ganadores participantes desafio) (recompensa participantes (ganadores participantes desafio))
+encararDesafio participantes desafio = incrementarExperienciaATodos (ganadores desafio participantes) (recompensa participantes (ganadores desafio participantes))
 
 incrementarExperienciaATodos:: [Participante] -> Int -> [Participante]
 incrementarExperienciaATodos participantes valor = map (incrementarExperiencia valor) participantes
 
-ganadores :: [Participante] -> Desafio -> [Participante]
-ganadores participantes desafio = filter (pruebaASuperar desafio) . map (`elegirNuevoRol` rolesDisponibles desafio) $ participantes
+ganadores :: Desafio -> [Participante] -> [Participante]
+ganadores desafio = filter (pruebaASuperar desafio) . map (`elegirNuevoRol` rolesDisponibles desafio) 
 
 incrementarExperiencia :: Int -> Participante -> Participante
 incrementarExperiencia valor participante = participante {experiencia = experiencia participante + valor}
@@ -131,7 +131,7 @@ jugarTorneo = foldl encararDesafio
 
 {--------------------------------------------------Ejemplos para Pruebas------------------------------------------}
 
-
+{-
 part1 = UnParticipante "agus" 750 20 12 indeterminado 
 part2 = UnParticipante "lucas" 850 30 12 indeterminado 
 part3 = UnParticipante "maxi" 500 15 12 indeterminado 
@@ -143,6 +143,8 @@ arma2 = UnArma 30 800
 arma3 = UnArma 25 900
 arma4 = UnArma 30 1000
 
+desafio1 = Desafio rolesEjemplo ((>500). experiencia)
+-}
 
 
 
