@@ -49,13 +49,13 @@ data Arma = UnArma {
 
 type Rol = Participante -> Int
 
-indeterminado :: Participante -> Int
+indeterminado :: Rol
 indeterminado participante = destreza participante + inteligencia participante
 
-soporte :: Participante -> Int
+soporte :: Rol
 soporte participante = experiencia participante + inteligencia participante*7
 
-primeraLinea :: Arma -> Participante -> Int
+primeraLinea :: Arma -> Rol
 primeraLinea arma participante = (destreza participante + potenciaArma participante arma) * div (experiencia participante) 100
 
 
@@ -76,14 +76,16 @@ elegirNuevoRol participante roles = cambiarRol participante (maximoSegun ($parti
 cambiarRol :: Participante -> Rol -> Participante
 cambiarRol participante rol = participante{rol = rol}
 
-rolesEjemplo = [indeterminado, soporte, primeraLinea arma]
-arma = UnArma 20 750
+--rolesEjemplo = [indeterminado, soporte, primeraLinea arma]
+--arma = UnArma 20 750
 
 maestroDeArmas :: [Arma] -> Rol 
 maestroDeArmas armas participante = sum . map (potenciaArma participante) . take 3 . filter (puedeUsarArma participante) $ armas
 
 puedeUsarArma :: Participante -> Arma -> Bool
 puedeUsarArma participante arma = experienciaMinima arma <= experiencia participante
+
+{-2 b) >poder (elegirNuevoRol participante [indeterminado, soporte, primeraLinea (UnArma 20 750)])-}
 
 {-2 d) es posible gracias a que solo tomamos los 3 primeros(que cumplan la condicion) por lo que gracias a la evalucacion perezosa
 va a ser posible dar un resultado-} 
